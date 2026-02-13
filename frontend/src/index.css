@@ -1,0 +1,38 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: "Space Grotesk", system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.6;
+  font-weight: 400;
+  color: #0F172A;
+  background-color: #F4F6FB;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background-color: #F4F6FB;
+}
+
+a {
+  color: #4F46E5;
+  text-decoration: none;
+}
+a:hover {
+  color: #4338CA;
+}
+
+/* Classe utilitaire pour les cartes cohérentes */
+.card {
+  @apply bg-white rounded-2xl shadow-sm border border-gray-100;
+}
+
