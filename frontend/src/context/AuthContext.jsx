@@ -1,15 +1,9 @@
 /**
  * AuthContext.jsx
- * Contexte global pour la gestion de l'authentification simulée
+ * Contexte global pour la gestion de l'authentification 100% client
  * Utilise useState et useEffect pour persister l'utilisateur dans localStorage
- * 
- * Fonctionnalités :
- * - login(email, password) : Appelle POST /login sur le backend
- * - logout() : Vide l'état et le localStorage
- * - User automatiquement restauré au rechargement de la page
  */
 import { useState, useEffect } from 'react';
-import apiClient from '../api/client';
 import { AuthContext } from './AuthContextBase';
 
 export function AuthProvider({ children }) {
@@ -31,20 +25,26 @@ export function AuthProvider({ children }) {
     setLoading(false);
   }, []);
 
-  // Fonction de connexion simulée
+  // Fonction de connexion 100% client (pas d'appel API)
   const login = async (email, password) => {
     try {
       setError(null);
       setLoading(true);
 
-      // Appel au backend pour authentification simulée
-      const response = await apiClient.post('/login', {
-        email,
-        password,
-      });
+      // Validation minimale
+      if (!email || !password) {
+        throw new Error('Email et mot de passe requis');
+      }
 
-      // Extraction des données utilisateur et token
-      const { user: userData, token: newToken } = response.data;
+      // Créer un utilisateur de démo
+      const userData = {
+        id: 1,
+        name: email.split('@')[0],
+        email,
+      };
+
+      // Générer un token simple
+      const newToken = `token-${Date.now()}`;
 
       // Persistance dans localStorage
       localStorage.setItem('user', JSON.stringify(userData));
@@ -57,7 +57,7 @@ export function AuthProvider({ children }) {
       return userData;
     } catch (err) {
       console.error('Erreur lors de la connexion:', err);
-      const errorMessage = err.response?.data?.message || 'Erreur de connexion';
+      const errorMessage = err.message || 'Erreur de connexion';
       setError(errorMessage);
       throw new Error(errorMessage);
     } finally {

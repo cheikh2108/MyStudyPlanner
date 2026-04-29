@@ -1,28 +1,23 @@
 ﻿# MyStudyPlanner 
 
-Application de gestion de taches academiques (devoirs, TP, projets) avec suivi des deadlines et progression par matiere.
+Application de gestion de tâches académiques (devoirs, TP, projets) avec suivi des deadlines et progression par matière.
 
-## Fonctionnalites
-- Authentification simulee (login/logout)
-- CRUD des taches (creation, edition, suppression)
-- Filtres (recherche, matiere, etat, priorite) + pagination
-- Gestion des matieres (ajout, suppression, couleur)
+**Application 100% client avec localStorage. Aucun serveur backend requis.**
+
+## Fonctionnalités
+- Authentification locale (login/logout)
+- CRUD des tâches (création, édition, suppression)
+- Filtres (recherche, matière, état, priorité) + pagination
+- Gestion des matières (ajout, suppression, couleur)
 - Tableau de bord avec statistiques et prochaines deadlines
+- Persistance des données dans localStorage
 
 ## Stack
 - Frontend: React + Vite + Tailwind CSS
-- Backend: Node.js + Express
-- Persistance: db.json
+- Persistance: localStorage (100% client)
+- Pas de backend requis
 
 ## Lancer le projet en local
-
-### Backend
-```bash
-cd backend
-npm install
-npm run dev
-```
-Serveur sur http://localhost:4000
 
 ### Frontend
 ```bash
@@ -34,48 +29,44 @@ App sur http://localhost:5173
 
 ## Déploiement
 
-Le backend Express peut servir le build de production du frontend React. Le plus simple est donc de déployer la racine du dépôt ou le dossier backend avec le frontend déjà compilé.
+Aucun backend à déployer ! L'application est 100% client avec localStorage.
 
-Variables d'environnement utiles :
-- `PORT` pour le port du backend.
-- `CORS_ORIGIN` pour autoriser un ou plusieurs domaines frontend séparés, séparés par des virgules.
-- `VITE_API_URL` pour pointer le frontend vers un backend distant. En production sur un même domaine, cette variable peut être vide.
+Pour déployer sur Appwrite, Netlify, Vercel, GitHub Pages, etc. :
 
-Commande de build frontend :
+Commande de build :
 ```bash
-cd frontend
-npm install
 npm run build
 ```
 
-Commande de démarrage backend :
-```bash
-cd backend
-npm install
-npm start
-```
+Cela crée le dossier `dist/` contenant l'application statique prête à être hébergée.
 
-Si le frontend a été compilé dans `frontend/dist`, le serveur Express le sert automatiquement et les routes SPA comme `/dashboard` ou `/tasks` fonctionnent au rafraîchissement.
+Configuration Appwrite :
+- Build command: `npm run build`
+- Output directory: `dist`
 
-## Routes API
-- GET /tasks
-- POST /tasks
-- PUT /tasks/:id
-- DELETE /tasks/:id
-- GET /subjects
-- POST /subjects
-- DELETE /subjects/:id
-- GET /stats
-- POST /login
+L'application fonctionne immédiatement après le déploiement sans configuration supplémentaire.
 
 ## Structure
 ```
 MyStudyPlanner/
-	backend/    # API Express + db.json
-	frontend/   # React + Tailwind
+├── backend/           # [Archive] Express server - non utilisé
+├── frontend/          # React + Tailwind (100% client)
+├── dist/              # Build de production statique
+├── package.json       # Workspace root
+└── scripts/           # Utilitaires de build
 ```
 
-## Notes
-- L'authentification est simulee (tout identifiant est accepte).
-- La suppression d'une matiere supprime ses taches associees.
+## Données de démo
 
+L'application inclut des données initiales:
+- 5 matières pré-créées
+- 3 tâches de démo
+
+Les données sont persistées dans le localStorage du navigateur.
+
+## Notes
+- L'authentification accepte tout identifiant
+- Les données sont stockées dans localStorage du navigateur
+- Chaque profil navigateur a sa propre instance des données
+- La suppression d'une matière supprime ses tâches associées
+- Les données sont conservées après fermeture/réouverture du navigateur

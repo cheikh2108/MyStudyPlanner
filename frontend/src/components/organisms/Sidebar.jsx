@@ -1,19 +1,11 @@
 /**
  * Organism: Sidebar
  * Affiche la liste des matières avec barres de progression
- * Récupère les données de GET /subjects et les associe avec les tâches
- * Utilise un système de couleurs prédéfinies pour chaque matière
+ * Utilise les données fournies en props (pas d'appel API)
  */
-import { useEffect, useState } from 'react';
 import SubjectItem from '../molecules/SubjectItem';
-import apiClient from '../../api/client';
 
-export default function Sidebar({ subjects: subjectsProp, tasks: tasksProp }) {
-  const [subjects, setSubjects] = useState(subjectsProp || []);
-  const [tasks, setTasks] = useState(tasksProp || []);
-  const [loading, setLoading] = useState(!subjectsProp || !tasksProp);
-  const [error, setError] = useState(null);
-
+export default function Sidebar({ subjects = [], tasks = [] }) {
   // Palette de couleurs pour différencier les matières
   const colorPalette = [
     '#4F46E5',
@@ -22,34 +14,6 @@ export default function Sidebar({ subjects: subjectsProp, tasks: tasksProp }) {
     '#EF4444',
     '#8B5CF6',
   ];
-
-  useEffect(() => {
-    if (subjectsProp && tasksProp) {
-      setSubjects(subjectsProp);
-      setTasks(tasksProp);
-      setLoading(false);
-      return;
-    }
-
-    const fetchData = async () => {
-      try {
-        const [subjectsRes, tasksRes] = await Promise.all([
-          apiClient.get('/subjects'),
-          apiClient.get('/tasks'),
-        ]);
-        setSubjects(subjectsRes.data);
-        setTasks(tasksRes.data);
-        setError(null);
-      } catch (err) {
-        console.error('Erreur lors du chargement des données:', err);
-        setError('Impossible de charger les matières');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [subjectsProp, tasksProp]);
 
   // Calculer le nombre de tâches complétées pour une matière
   const getCompletedTasksForSubject = (subjectId) => {
@@ -62,14 +26,6 @@ export default function Sidebar({ subjects: subjectsProp, tasks: tasksProp }) {
   const getTotalTasksForSubject = (subjectId) => {
     return tasks.filter((task) => task.subjectId === subjectId).length;
   };
-
-  if (loading) {
-    return <div className="animate-pulse text-gray-400">Chargement...</div>;
-  }
-
-  if (error) {
-    return <div className="text-red-500">{error}</div>;
-  }
 
   return (
     <div className="card p-5">
@@ -93,8 +49,3 @@ export default function Sidebar({ subjects: subjectsProp, tasks: tasksProp }) {
     </div>
   );
 }
-
-Sidebar.defaultProps = {
-  subjects: null,
-  tasks: null,
-};

@@ -1,13 +1,12 @@
 /**
  * Organism: Dashboard Stats
- * Récupère les données de GET /stats et affiche les 3 cartes principales
+ * Récupère les données depuis dataStore et affiche les 3 cartes principales
  * (Total des tâches, En cours, Terminées)
- * Utilise useEffect pour charger les données au montage du composant
  */
 import { useEffect, useState } from 'react';
 import { FileText, Clock, CheckCircle } from 'lucide-react';
 import StatCard from '../atoms/StatCard';
-import apiClient from '../../api/client';
+import * as dataStore from '../../storage/dataStore';
 
 export default function DashboardStats() {
   const [stats, setStats] = useState({
@@ -15,42 +14,11 @@ export default function DashboardStats() {
     en_cours: 0,
     termine: 0,
   });
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
 
   useEffect(() => {
-    // Fonction asynchrone pour récupérer les stats depuis le backend
-    const fetchStats = async () => {
-      try {
-        const response = await apiClient.get('/stats');
-        setStats(response.data);
-        setError(null);
-      } catch (err) {
-        console.error('Erreur lors du chargement des stats:', err);
-        setError('Impossible de charger les statistiques');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchStats();
+    const stats = dataStore.getStats();
+    setStats(stats);
   }, []);
-
-  // État de chargement
-  if (loading) {
-    return (
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {[1, 2, 3].map((i) => (
-          <div key={i} className="card p-6 animate-pulse bg-gray-100 h-24" />
-        ))}
-      </div>
-    );
-  }
-
-  // Affichage des erreurs
-  if (error) {
-    return <div className="text-red-500">{error}</div>;
-  }
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

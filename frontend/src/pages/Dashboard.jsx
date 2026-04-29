@@ -3,6 +3,7 @@
  * Page principale affichant le tableau de bord avec les stats et la sidebar
  * Structure responsif : stats au haut, sidebar à gauche en bas
  * Intégré avec AuthContext pour afficher les infos utilisateur
+ * Utilise dataStore pour la gestion 100% client des données
  */
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -10,7 +11,7 @@ import { Edit, Plus, Trash2 } from 'lucide-react';
 import DashboardStats from '../components/organisms/DashboardStats';
 import Sidebar from '../components/organisms/Sidebar';
 import { useAuth } from '../hooks/useAuth';
-import apiClient from '../api/client';
+import * as dataStore from '../storage/dataStore';
 import Badge from '../components/atoms/Badge';
 import Checkbox from '../components/atoms/Checkbox';
 import Header from '../components/organisms/Header';
@@ -34,22 +35,12 @@ export default function Dashboard() {
   };
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [tasksRes, subjectsRes] = await Promise.all([
-          apiClient.get('/tasks'),
-          apiClient.get('/subjects'),
-        ]);
-        setTasks(tasksRes.data);
-        setSubjects(subjectsRes.data);
-      } catch (err) {
-        console.error('Erreur lors du chargement des données:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
+    // Charger les données depuis localStorage
+    const loadedTasks = dataStore.getTasks();
+    const loadedSubjects = dataStore.getSubjects();
+    setTasks(loadedTasks);
+    setSubjects(loadedSubjects);
+    setLoading(false);
   }, []);
 
   const getSubjectName = (subjectId) => {
@@ -73,51 +64,36 @@ export default function Dashboard() {
       .slice(0, 3);
   }, [tasks]);
 
-  const handleDeleteTask = async (taskId) => {
-    try {
-      await apiClient.delete(`/tasks/${taskId}`);
-      setTasks(tasks.filter((task) => task.id !== taskId));
-    } catch (err) {
-      console.error('Erreur lors de la suppression de la tâche:', err);
-      alert('Erreur lors de la suppression de la tâche');
-    }
+  const handleDeleteTask = (taskId) => {
+    dataStore.deleteTask(taskId);
+    setTasks(tasks.filter((task) => task.id !== taskId));
   };
 
-  const handleConfirmDelete = async () => {
+  const handleConfirmDelete = () => {
     if (!confirmState.taskId) return;
-    await handleDeleteTask(confirmState.taskId);
+    handleDeleteTask(confirmState.taskId);
     setConfirmState({ open: false, taskId: null });
   };
 
-  const handleCreateTask = async (formData) => {
-    try {
-      const response = await apiClient.post('/tasks', {
-        ...formData,
-        status: 'en_cours',
-      });
-      setTasks([...tasks, response.data]);
-      setIsModalOpen(false);
-      setEditingTask(null);
-    } catch (err) {
-      console.error('Erreur lors de la création de la tâche:', err);
-      alert('Erreur lors de la création de la tâche');
-    }
+  const handleCreateTask = (formData) => {
+    const newTask = dataStore.createTask({
+      ...formData,
+      status: 'en_cours',
+    });
+    setTasks([...tasks, newTask]);
+    setIsModalOpen(false);
+    setEditingTask(null);
   };
 
-  const handleUpdateTask = async (formData) => {
-    try {
-      if (!editingTask) return;
-      const response = await apiClient.put(`/tasks/${editingTask.id}`, {
-        ...formData,
-        status: editingTask.status,
-      });
-      setTasks(tasks.map((task) => (task.id === editingTask.id ? response.data : task)));
-      setIsModalOpen(false);
-      setEditingTask(null);
-    } catch (err) {
-      console.error('Erreur lors de la modification de la tâche:', err);
-      alert('Erreur lors de la modification de la tâche');
-    }
+  const handleUpdateTask = (formData) => {
+    if (!editingTask) return;
+    const updatedTask = dataStore.updateTask(editingTask.id, {
+      ...formData,
+      status: editingTask.status,
+    });
+    setTasks(tasks.map((task) => (task.id === editingTask.id ? updatedTask : task)));
+    setIsModalOpen(false);
+    setEditingTask(null);
   };
 
   const handleModalSubmit = (formData) => {
@@ -128,22 +104,13 @@ export default function Dashboard() {
     }
   };
 
-  const handleToggleStatus = async (taskId) => {
-    try {
-      const task = tasks.find((item) => item.id === taskId);
-      if (!task) return;
+  const handleToggleStatus = (taskId) => {
+    const task = tasks.find((item) => item.id === taskId);
+    if (!task) return;
 
-      const newStatus = task.status === 'en_cours' ? 'termine' : 'en_cours';
-      const response = await apiClient.put(`/tasks/${taskId}`, {
-        ...task,
-        status: newStatus,
-      });
-
-      setTasks(tasks.map((item) => (item.id === taskId ? response.data : item)));
-    } catch (err) {
-      console.error('Erreur lors de la mise a jour du statut:', err);
-      alert('Erreur lors de la mise a jour du statut');
-    }
+    const newStatus = task.status === 'en_cours' ? 'termine' : 'en_cours';
+    const updatedTask = dataStore.updateTask(taskId, { status: newStatus });
+    setTasks(tasks.map((item) => (item.id === taskId ? updatedTask : item)));
   };
 
   return (
