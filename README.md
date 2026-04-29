@@ -19,7 +19,6 @@ Application de gestion de tâches académiques (devoirs, TP, projets) avec suivi
 
 ## Lancer le projet en local
 
-### Frontend
 ```bash
 cd frontend
 npm install
@@ -49,11 +48,10 @@ L'application fonctionne immédiatement après le déploiement sans configuratio
 ## Structure
 ```
 MyStudyPlanner/
-├── backend/           # [Archive] Express server - non utilisé
-├── frontend/          # React + Tailwind (100% client)
+├── frontend/          # React + Vite + Tailwind (100% client)
 ├── dist/              # Build de production statique
-├── package.json       # Workspace root
-└── scripts/           # Utilitaires de build
+├── scripts/           # Utilitaires de build
+└── package.json       # Configuration racine
 ```
 
 ## Données de démo

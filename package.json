@@ -1,12 +1,8 @@
 {
   "name": "mystudyplanner",
   "private": true,
-  "workspaces": [
-    "frontend",
-    "backend"
-  ],
   "scripts": {
-    "build": "npm run build --workspace frontend && node scripts/copy-frontend-dist.js",
-    "start": "npm run start --workspace backend"
+    "build": "cd frontend && npm run build && cd .. && node scripts/copy-frontend-dist.js",
+    "dev": "cd frontend && npm run dev"
   }
 }
