@@ -22,7 +22,7 @@
     },
     {
       "id": 6,
-      "name": "Client-Server",
+      "name": "Intelligence Artificielle",
       "color": "#14B8A6"
     }
   ],
@@ -44,7 +44,7 @@
       "subjectId": 1,
       "type": "TP",
       "priority": "moyenne",
-      "status": "en_cours",
+      "status": "termine",
       "dueDate": "2026-02-10"
     },
     {
@@ -74,7 +74,7 @@
       "subjectId": 3,
       "type": "Devoir",
       "priority": "moyenne",
-      "status": "en_cours",
+      "status": "termine",
       "dueDate": "2026-03-02"
     },
     {
@@ -84,7 +84,7 @@
       "subjectId": 4,
       "type": "TP",
       "priority": "basse",
-      "status": "termine",
+      "status": "en_cours",
       "dueDate": "2026-02-08"
     },
     {
@@ -94,18 +94,8 @@
       "subjectId": 5,
       "type": "Devoir",
       "priority": "moyenne",
-      "status": "en_cours",
-      "dueDate": "2026-03-05"
-    },
-    {
-      "id": 10,
-      "title": "Microservices",
-      "description": "Laravel et les microservices",
-      "subjectId": 6,
-      "type": "TP",
-      "priority": "haute",
       "status": "termine",
-      "dueDate": "2026-02-28"
+      "dueDate": "2026-03-05"
     }
   ]
 }

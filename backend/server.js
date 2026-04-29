@@ -6,9 +6,23 @@ const path = require("path");
 const app = express();
 const PORT = process.env.PORT || 4000;
 const DB_PATH = path.join(__dirname, "db.json");
+const FRONTEND_DIST_PATH = path.join(__dirname, "..", "frontend", "dist");
+const FRONTEND_INDEX_PATH = path.join(FRONTEND_DIST_PATH, "index.html");
+const allowedOrigins = (process.env.CORS_ORIGIN || "")
+  .split(",")
+  .map((origin) => origin.trim())
+  .filter(Boolean);
 
-app.use(cors());
+app.use(
+  cors({
+    origin: allowedOrigins.length > 0 ? allowedOrigins : true,
+  })
+);
 app.use(express.json());
+
+if (fs.existsSync(FRONTEND_DIST_PATH)) {
+  app.use(express.static(FRONTEND_DIST_PATH));
+}
 
 function readDb() {
   const rawData = fs.readFileSync(DB_PATH, "utf-8");
@@ -194,6 +208,29 @@ app.post("/login", (req, res) => {
   res.json({
     user,
     token: "token-demo-123456"
+  });
+});
+
+app.get("/health", (req, res) => {
+  res.json({ status: "ok" });
+});
+
+app.get("*", (req, res, next) => {
+  const apiRoutes = ["/subjects", "/tasks", "/stats", "/login", "/health"];
+  const isApiRequest = apiRoutes.some(
+    (route) => req.path === route || req.path.startsWith(`${route}/`)
+  );
+
+  if (isApiRequest) {
+    return next();
+  }
+
+  if (fs.existsSync(FRONTEND_INDEX_PATH)) {
+    return res.sendFile(FRONTEND_INDEX_PATH);
+  }
+
+  return res.status(404).json({
+    message: "Frontend non compile. Lancez le build frontend avant le deploy.",
   });
 });
 
