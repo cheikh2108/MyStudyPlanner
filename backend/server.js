@@ -6,8 +6,10 @@ const path = require("path");
 const app = express();
 const PORT = process.env.PORT || 4000;
 const DB_PATH = path.join(__dirname, "db.json");
+const ROOT_DIST_PATH = path.join(__dirname, "..", "dist");
 const FRONTEND_DIST_PATH = path.join(__dirname, "..", "frontend", "dist");
 const FRONTEND_INDEX_PATH = path.join(FRONTEND_DIST_PATH, "index.html");
+const ROOT_INDEX_PATH = path.join(ROOT_DIST_PATH, "index.html");
 const allowedOrigins = (process.env.CORS_ORIGIN || "")
   .split(",")
   .map((origin) => origin.trim())
@@ -20,8 +22,12 @@ app.use(
 );
 app.use(express.json());
 
-if (fs.existsSync(FRONTEND_DIST_PATH)) {
-  app.use(express.static(FRONTEND_DIST_PATH));
+const staticDistPath = fs.existsSync(ROOT_DIST_PATH)
+  ? ROOT_DIST_PATH
+  : FRONTEND_DIST_PATH;
+
+if (fs.existsSync(staticDistPath)) {
+  app.use(express.static(staticDistPath));
 }
 
 function readDb() {
@@ -223,6 +229,10 @@ app.get("*", (req, res, next) => {
 
   if (isApiRequest) {
     return next();
+  }
+
+  if (fs.existsSync(ROOT_INDEX_PATH)) {
+    return res.sendFile(ROOT_INDEX_PATH);
   }
 
   if (fs.existsSync(FRONTEND_INDEX_PATH)) {
