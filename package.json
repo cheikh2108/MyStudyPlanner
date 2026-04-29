@@ -2,7 +2,7 @@
   "name": "mystudyplanner",
   "private": true,
   "scripts": {
-    "build": "cd frontend && npm run build && cd .. && node scripts/copy-frontend-dist.js",
+    "build": "npm install --prefix frontend && npm run build --prefix frontend && node scripts/copy-frontend-dist.js",
     "dev": "cd frontend && npm run dev"
   }
 }
